@@ -1,0 +1,53 @@
+version: '3.7'
+
+services:
+
+        mariadb:
+                build: ./needed/MariaDB
+                image: mariadb:jkaczmar
+                container_name: database
+                environment:
+                        MYSQL_ROOT_PASSWORD: root_psw
+                        MYSQL_DATABASE: 27_database
+                        MYSQL_USR: jkaczmar
+                        MYSQL_PASSWORD: 2137
+                restart: always
+                networks:
+                        - inception
+
+
+        wordpress:
+                 build: ./needed/Wordpress
+                 image: wordpress:jkaczmar
+                 container_name: wordpress
+                 restart: always
+                 depends_on:
+                         - mariadb
+                 networks:
+                         - inception
+        nginx:
+                build: ./needed/Nginx
+                image: nginx:jkaczmar
+                container_name: nginx
+                ports:
+                        - "443:443"
+                restart: always
+                networks:
+                        - inception
+                depends_on:
+                        - wordpress
+networks:
+         inception:
+                 name: inception
+volumes:
+        data:
+                driver_opts:
+                        o: bind
+                        type: none
+                        device: /home/jkaczmar/data/mysql
+        server:
+                 driver_opts:
+                        o: bind
+                        type: none
+                        device: /home/jkaczmar/data/wordpress
+

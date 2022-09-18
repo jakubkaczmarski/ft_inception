@@ -1,0 +1,10 @@
+CREATE DATABASE WORDPRESS
+
+ALTER USER 'root'@'localhost' INDETIFIED BY '2137'
+FLUSH PRIVILEGES
+
+CREATE USER 'Geiger'@'localhost' INDENTIFIED BY '27'
+
+GRANT ALL PRIVILEGES ON wordpress .* TO 'wp'@'wordpress.inception' INDETIFIED BY '2137' with grant option;
+
+FLUSH PRIVILEGES;
