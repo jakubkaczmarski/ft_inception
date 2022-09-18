@@ -1,4 +1,4 @@
-SRCS := srcs/docker-compose.yaml
+SRCS := srcs/docker-compose.yml
 NAME := inception
 
 all: $(NAME)
