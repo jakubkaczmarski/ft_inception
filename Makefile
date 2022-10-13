@@ -1,13 +1,12 @@
-SRCS := srcs/docker-compose.yml
-NAME := inception
+SRC	:= ./srcs/docker-compose.yml
+NAME	:= inception
 
-all: $(NAME)
+all: ${NAME}
 
-
-$(NAME) : $(SRCS)
+${NAME}: ${SRC}
 	@docker system prune -f
-	@docker-compose -f $(SRCS) up --build
+	@docker-compose -f ${SRC} up --build
 
 clean:
-	@docker-compose -f $(SRCS) down
+	@docker-compose -f ${SRC} down
 

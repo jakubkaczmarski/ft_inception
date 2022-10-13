@@ -1,53 +1,61 @@
-version: '3.7'
+version: "3.5"
+
+networks:
+  inception:
+    name: inception
+    driver: bridge
+
+volumes:
+  wpd:
+    driver: local
+    name: wpd
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jkaczmar/data/wordpress
+  db:
+    driver: local
+    name: db
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jkaczmar/data/mariadb
 
 services:
+  mariadb:
+    container_name: mariadb
+    build: ./requiremenents/mariadb
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - inception
+    restart: unless-stopped
+    env_file:
+      - .env
 
-        mariadb:
-                build: ./needed/MariaDB
-                image: mariadb:jkaczmar
-                container_name: database
-                environment:
-                        MYSQL_ROOT_PASSWORD: root_psw
-                        MYSQL_DATABASE: 27_database
-                        MYSQL_USR: jkaczmar
-                        MYSQL_PASSWORD: 2137
-                restart: always
-                networks:
-                        - inception
+  wordpress:
+    container_name: wordpress
+    build: ./requiremenents/wordpress
+    depends_on:
+      - mariadb
+    volumes:
+      - wpd:/var/www/html
+    networks:
+      - inception
+    env_file:
+      - .env
+    restart: unless-stopped
 
-
-        wordpress:
-                 build: ./needed/Wordpress
-                 image: wordpress:jkaczmar
-                 container_name: wordpress
-                 restart: always
-                 depends_on:
-                         - mariadb
-                 networks:
-                         - inception
-        nginx:
-                build: ./needed/Nginx
-                image: nginx:jkaczmar
-                container_name: nginx
-                ports:
-                        - "443:443"
-                restart: always
-                networks:
-                        - inception
-                depends_on:
-                        - wordpress
-networks:
-         inception:
-                 name: inception
-volumes:
-        data:
-                driver_opts:
-                        o: bind
-                        type: none
-                        device: /home/jkaczmar/data/mysql
-        server:
-                 driver_opts:
-                        o: bind
-                        type: none
-                        device: /home/jkaczmar/data/wordpress
+  nginx:
+    container_name: nginx
+    build: ./requiremenents/nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    volumes:
+      - wpd:/var/www/html
+    networks:
+      - inception
+    restart: unless-stopped
 
